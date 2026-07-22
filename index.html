@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Absensi Face Recognition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        .navbar {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+        }
+
+        .navbar button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .navbar button:hover {
+            background: #c0392b;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .login-screen {
+            max-width: 400px;
+            margin: 5rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .login-screen h2 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            margin-top: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .siswa-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .siswa-list {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #ddd;
+            color: #2c3e50;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .table-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            width: auto;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .camera-container {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .camera-wrap {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            margin: 1rem 0;
+        }
+
+        #camera {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            display: block;
+        }
+
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .camera-controls .btn {
+            width: auto;
+        }
+
+        .status-box {
+            margin-top: 0.75rem;
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .attendance-report {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-present {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-absent {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .boot-screen {
+            max-width: 400px;
+            margin: 6rem auto;
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .boot-screen.error {
+            color: #721c24;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 0.75rem;
+            background: #3498db;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .file-input-label:hover {
+            background: #2980b9;
+        }
+
+        .file-name {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .photo-preview {
+            margin-top: 1rem;
+            max-width: 200px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="boot-screen">
+            <div class="spinner"></div>
+            <p>Memuat model face recognition...</p>
+        </div>
+    </div>
+
+    <!-- Library face recognition yang jalan di browser (tidak butuh service Python terpisah) -->
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+
+    <script>
+        // ============ KONFIGURASI FACE RECOGNITION ============
+        const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
+        // Semakin kecil MATCH_THRESHOLD, semakin ketat pencocokan wajah (lebih sedikit salah kenali,
+        // tapi kadang perlu beberapa kali coba). 0.5 cukup ketat untuk sistem absensi.
+        const MATCH_THRESHOLD = 0.5;
+        // Jangan catat absen siswa yang sama berkali-kali dalam rentang waktu ini (ms)
+        const COOLDOWN_MS = 5000;
+
+        const app = {
+            currentUser: null,
+            currentTab: 'siswa',
+            apiUrl: '/api', // relatif -- frontend & backend jalan di service Railway yang sama
+
+            faceMatcher: null,
+            siswaMap: {},
+            lastRecognized: {},
+            stopCapture: true,
+
+            // ============ INIT ============
+            async init() {
+                try {
+                    await Promise.all([
+                        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                        faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+                    ]);
+                } catch (e) {
+                    document.getElementById('root').innerHTML = `
+                        <div class="boot-screen error">
+                            <p>❌ Gagal memuat model face recognition.</p>
+                            <p style="margin-top:0.5rem; font-size:0.9rem;">
+                                Cek koneksi internet perangkat ini (model diambil dari CDN),
+                                lalu refresh halaman. Kalau jaringan sekolah memblokir CDN,
+                                coba pakai jaringan lain atau host model-nya sendiri (lihat SETUP.md).
+                            </p>
+                            <p style="margin-top:0.5rem; font-size:0.8rem; color:#999;">${e.message}</p>
+                        </div>`;
+                    return;
+                }
+                this.checkAuth();
+            },
+
+            escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str ?? '';
+                return div.innerHTML;
+            },
+
+            // ============ AUTH ============
+            checkAuth() {
+                const user = localStorage.getItem('user');
+                if (user) {
+                    this.currentUser = JSON.parse(user);
+                    this.showDashboard();
+                } else {
+                    this.showLogin();
+                }
+            },
+
+            showLogin() {
+                document.getElementById('root').innerHTML = `
+                    <div class="login-screen">
+                        <h2>🔐 Login Admin</h2>
+                        <div id="loginMessage"></div>
+                        <form onsubmit="app.handleLogin(event)">
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" id="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" id="password" required>
+                            </div>
+                            <button type="submit" class="btn">Login</button>
+                        </form>
+                        <p style="margin-top: 1rem; text-align: center; font-size: 0.9rem; color: #666;">
+                            Demo: admin / admin123
+                        </p>
+                    </div>
+                `;
+            },
+
+            async handleLogin(e) {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                try {
+                    const response = await fetch(`${this.apiUrl}/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        this.currentUser = { id: data.admin_id, username };
+                        localStorage.setItem('user', JSON.stringify(this.currentUser));
+                        this.showDashboard();
+                    } else {
+                        document.getElementById('loginMessage').innerHTML =
+                            `<div class="message error">${this.escapeHtml(data.message)}</div>`;
+                    }
+                } catch (error) {
+                    document.getElementById('loginMessage').innerHTML =
+                        `<div class="message error">Error: ${this.escapeHtml(error.message)}</div>`;
+                }
+            },
+
+            logout() {
+                this.stopCamera();
+                localStorage.removeItem('user');
+                this.currentUser = null;
+                this.showLogin();
+            },
+
+            // ============ DASHBOARD ============
+            showDashboard() {
+                document.getElementById('root').innerHTML = `
+                    <nav class="navbar">
+                        <h1>📷 Face Recognition Attendance</h1>
+                        <div>
+                            <span style="margin-right: 1rem;">Hello, ${this.escapeHtml(this.currentUser.username)}</span>
+                            <button onclick="app.logout()">Logout</button>
+                        </div>
+                    </nav>
+
+                    <div class="container">
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="app.switchTab('siswa')">👥 Manage Siswa</button>
+                            <button class="tab-btn" onclick="app.switchTab('absen')">📸 Absensi</button>
+                            <button class="tab-btn" onclick="app.switchTab('report')">📊 Report</button>
+                        </div>
+
+                        <!-- Manage Siswa Tab -->
+                        <div id="siswa" class="tab-content active">
+                            <div class="siswa-form">
+                                <h3>Tambah Siswa</h3>
+                                <div id="formMessage"></div>
+                                <form onsubmit="app.handleAddSiswa(event)">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Nama Siswa</label>
+                                            <input type="text" id="nama" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>NIS</label>
+                                            <input type="text" id="nis" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Kelas</label>
+                                            <select id="kelas" required style="padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+                                                <option value="">-- Pilih Kelas --</option>
+                                                <option value="10A">10A</option>
+                                                <option value="10B">10B</option>
+                                                <option value="11A">11A</option>
+                                                <option value="11B">11B</option>
+                                                <option value="12A">12A</option>
+                                                <option value="12B">12B</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row full">
+                                        <div class="form-group">
+                                            <label>Foto Wajah</label>
+                                            <div class="file-input-wrapper">
+                                                <label class="file-input-label">
+                                                    📷 Pilih Foto
+                                                    <input type="file" id="photo" accept="image/*" required onchange="app.showPhotoPreview(event)">
+                                                </label>
+                                            </div>
+                                            <div id="photoPreview"></div>
+                                            <p class="file-name" id="fileName"></p>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn" id="submitSiswaBtn">Tambah Siswa</button>
+                                </form>
+                            </div>
+
+                            <div class="siswa-list">
+                                <h3 style="padding: 1rem;">Daftar Siswa</h3>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Foto</th>
+                                            <th>Nama</th>
+                                            <th>NIS</th>
+                                            <th>Kelas</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="siswaTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Absensi Tab -->
+                        <div id="absen" class="tab-content">
+                            <div class="camera-container">
+                                <h3>📸 Sistem Absensi Real-Time</h3>
+                                <p style="margin-bottom: 1rem; color: #666;">Beberapa siswa bisa antre & terdeteksi sekaligus di depan kamera</p>
+
+                                <div class="camera-wrap">
+                                    <video id="camera" autoplay playsinline muted></video>
+                                    <canvas id="overlay"></canvas>
+                                </div>
+
+                                <div class="camera-controls">
+                                    <button class="btn" id="startBtn" onclick="app.startCamera()">▶️ Mulai Kamera</button>
+                                    <button class="btn btn-secondary" id="stopBtn" onclick="app.stopCamera()" style="display: none;">⏹️ Stop Kamera</button>
+                                </div>
+
+                                <div id="attendanceStatus"></div>
+                            </div>
+                        </div>
+
+                        <!-- Report Tab -->
+                        <div id="report" class="tab-content">
+                            <div class="attendance-report">
+                                <div style="padding: 1rem;">
+                                    <h3>📊 Report Absensi Hari Ini</h3>
+                                    <button class="btn btn-secondary" onclick="app.loadReport()" style="margin-top: 1rem;">🔄 Refresh</button>
+                                </div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Nama</th>
+                                            <th>NIS</th>
+                                            <th>Kelas</th>
+                                            <th>Status</th>
+                                            <th>Jam Masuk</th>
+                                            <th>Confidence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reportTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                this.loadSiswa();
+                this.loadReport();
+            },
+
+            switchTab(tab) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+                document.getElementById(tab).classList.add('active');
+                event.target.classList.add('active');
+
+                if (this.currentTab === 'absen' && tab !== 'absen') {
+                    this.stopCamera();
+                }
+                this.currentTab = tab;
+
+                if (tab === 'absen') {
+                    setTimeout(() => this.startCamera(), 300);
+                } else if (tab === 'report') {
+                    this.loadReport();
+                }
+            },
+
+            // ============ MANAGE SISWA ============
+            async loadSiswa() {
+                try {
+                    const response = await fetch(`${this.apiUrl}/siswa`);
+                    const siswa = await response.json();
+
+                    const table = document.getElementById('siswaTable');
+                    table.innerHTML = siswa.map((s, idx) => `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td>${s.foto ? `<img src="${s.foto}" class="table-avatar" alt="">` : '👤'}</td>
+                            <td>${this.escapeHtml(s.nama)}</td>
+                            <td>${this.escapeHtml(s.nis)}</td>
+                            <td>${this.escapeHtml(s.kelas)}</td>
+                            <td>
+                                <button class="btn btn-delete" onclick="app.deleteSiswa(${s.id})">🗑️ Hapus</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } catch (error) {
+                    console.error('Error loading siswa:', error);
+                }
+            },
+
+            showPhotoPreview(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('photoPreview').innerHTML =
+                            `<img src="${e.target.result}" class="photo-preview">`;
+                    };
+                    reader.readAsDataURL(file);
+                    document.getElementById('fileName').textContent = file.name;
+                }
+            },
+
+            // Bikin thumbnail kecil (persegi, cover) buat disimpan & ditampilkan di daftar siswa
+            makeThumbnail(img, size) {
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const scale = Math.max(size / img.width, size / img.height);
+                const w = img.width * scale;
+                const h = img.height * scale;
+                ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+                return canvas.toDataURL('image/jpeg', 0.7);
+            },
+
+            async handleAddSiswa(e) {
+                e.preventDefault();
+
+                const nama = document.getElementById('nama').value.trim();
+                const nis = document.getElementById('nis').value.trim();
+                const kelas = document.getElementById('kelas').value;
+                const file = document.getElementById('photo').files[0];
+                const msgBox = document.getElementById('formMessage');
+                const submitBtn = document.getElementById('submitSiswaBtn');
+
+                if (!file) {
+                    msgBox.innerHTML = `<div class="message error">❌ Pilih foto wajah dulu</div>`;
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                msgBox.innerHTML = `<div class="message info">⏳ Mendeteksi wajah dari foto...</div>`;
+
+                try {
+                    const img = await faceapi.bufferToImage(file);
+                    const detection = await faceapi
+                        .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions({ inputSize: 512 }))
+                        .withFaceLandmarks()
+                        .withFaceDescriptor();
+
+                    if (!detection) {
+                        msgBox.innerHTML = `<div class="message error">❌ Wajah tidak terdeteksi di foto. Coba foto lain: pencahayaan lebih terang, wajah menghadap kamera, tidak ketutup masker/topi.</div>`;
+                        submitBtn.disabled = false;
+                        return;
+                    }
+
+                    const encoding = Array.from(detection.descriptor);
+                    const foto = this.makeThumbnail(img, 160);
+
+                    const response = await fetch(`${this.apiUrl}/siswa`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nama, nis, kelas, encoding, foto })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        msgBox.innerHTML = `<div class="message success">✅ ${this.escapeHtml(data.message)}</div>`;
+                        e.target.reset();
+                        document.getElementById('photoPreview').innerHTML = '';
+                        document.getElementById('fileName').textContent = '';
+                        this.loadSiswa();
+                    } else {
+                        msgBox.innerHTML = `<div class="message error">❌ ${this.escapeHtml(data.error)}</div>`;
+                    }
+                } catch (error) {
+                    msgBox.innerHTML = `<div class="message error">Error: ${this.escapeHtml(error.message)}</div>`;
+                } finally {
+                    submitBtn.disabled = false;
+                }
+            },
+
+            async deleteSiswa(id) {
+                if (!confirm('Hapus siswa ini?')) return;
+
+                try {
+                    const response = await fetch(`${this.apiUrl}/siswa/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        this.loadSiswa();
+                    }
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            },
+
+            // ============ ABSENSI (REAL-TIME, MULTI WAJAH) ============
+            async loadFaceMatcher() {
+                const response = await fetch(`${this.apiUrl}/siswa/encodings`);
+                const data = await response.json();
+
+                this.siswaMap = {};
+                const labeled = [];
+                data.forEach(s => {
+                    this.siswaMap[s.id] = s.nama;
+                    labeled.push(new faceapi.LabeledFaceDescriptors(String(s.id), [new Float32Array(s.encoding)]));
+                });
+
+                if (labeled.length === 0) {
+                    this.faceMatcher = null;
+                    return false;
+                }
+                this.faceMatcher = new faceapi.FaceMatcher(labeled, MATCH_THRESHOLD);
+                return true;
+            },
+
+            async startCamera() {
+                const statusDiv = document.getElementById('attendanceStatus');
+                if (!statusDiv) return; // tab sudah ganti sebelum kamera sempat mulai
+                if (!this.stopCapture) return; // kamera sudah jalan, jangan mulai loop dobel
+
+                statusDiv.innerHTML = '';
+                const ok = await this.loadFaceMatcher();
+                if (!ok) {
+                    statusDiv.innerHTML = `<div class="status-box status-error">⚠️ Belum ada siswa dengan data wajah terdaftar. Tambahkan siswa dulu di tab "Manage Siswa".</div>`;
+                    return;
+                }
+
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }
+                    });
+
+                    const video = document.getElementById('camera');
+                    video.srcObject = stream;
+                    await new Promise(resolve => { video.onloadedmetadata = resolve; });
+
+                    document.getElementById('startBtn').style.display = 'none';
+                    document.getElementById('stopBtn').style.display = 'inline-block';
+
+                    this.stopCapture = false;
+                    this.captureLoop();
+                } catch (error) {
+                    statusDiv.innerHTML = `<div class="status-box status-error">❌ Tidak bisa akses kamera: ${this.escapeHtml(error.message)}</div>`;
+                }
+            },
+
+            stopCamera() {
+                this.stopCapture = true;
+                const video = document.getElementById('camera');
+                if (video && video.srcObject) {
+                    video.srcObject.getTracks().forEach(track => track.stop());
+                    video.srcObject = null;
+                }
+                const startBtn = document.getElementById('startBtn');
+                const stopBtn = document.getElementById('stopBtn');
+                if (startBtn) startBtn.style.display = 'inline-block';
+                if (stopBtn) stopBtn.style.display = 'none';
+
+                const overlay = document.getElementById('overlay');
+                if (overlay) overlay.getContext('2d').clearRect(0, 0, overlay.width, overlay.height);
+            },
+
+            async captureLoop() {
+                if (this.stopCapture) return;
+
+                const video = document.getElementById('camera');
+                const overlay = document.getElementById('overlay');
+
+                if (video && overlay && video.videoWidth && this.faceMatcher) {
+                    overlay.width = video.videoWidth;
+                    overlay.height = video.videoHeight;
+
+                    try {
+                        const detections = await faceapi
+                            .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 320 }))
+                            .withFaceLandmarks()
+                            .withFaceDescriptors();
+
+                        this.drawDetections(overlay, detections);
+
+                        for (const det of detections) {
+                            const match = this.faceMatcher.findBestMatch(det.descriptor);
+                            if (match.label !== 'unknown') {
+                                this.handleMatch(match);
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Detection error:', err);
+                    }
+                }
+
+                if (!this.stopCapture) {
+                    setTimeout(() => this.captureLoop(), 700);
+                }
+            },
+
+            drawDetections(overlay, detections) {
+                const ctx = overlay.getContext('2d');
+                ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+                detections.forEach(det => {
+                    const match = this.faceMatcher.findBestMatch(det.descriptor);
+                    const isKnown = match.label !== 'unknown';
+                    const box = det.detection.box;
+                    const color = isKnown ? '#2ecc71' : '#e74c3c';
+                    const label = isKnown ? (this.siswaMap[match.label] || match.label) : 'Tidak dikenali';
+
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(box.x, box.y, box.width, box.height);
+
+                    ctx.font = '16px Segoe UI, sans-serif';
+                    const textY = box.y > 20 ? box.y - 8 : box.y + box.height + 18;
+                    const textWidth = ctx.measureText(label).width;
+                    ctx.fillStyle = color;
+                    ctx.fillRect(box.x, textY - 16, textWidth + 10, 20);
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(label, box.x + 5, textY - 2);
+                });
+            },
+
+            handleMatch(match) {
+                const siswaId = match.label;
+                const now = Date.now();
+                if (this.lastRecognized[siswaId] && now - this.lastRecognized[siswaId] < COOLDOWN_MS) {
+                    return; // masih dalam cooldown, jangan spam absen
+                }
+                this.lastRecognized[siswaId] = now;
+                const confidence = Math.max(0, Math.min(100, (1 - match.distance) * 100));
+                this.recordAttendance(siswaId, confidence);
+            },
+
+            async recordAttendance(siswaId, confidence) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/attendance/check`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ siswa_id: Number(siswaId), confidence })
+                    });
+
+                    const data = await response.json();
+                    this.pushAttendanceLog(data, confidence);
+                    if (data.success) {
+                        this.playBeep(800, 200);
+                        this.loadReport();
+                    }
+                } catch (error) {
+                    console.error('Error checking attendance:', error);
+                }
+            },
+
+            pushAttendanceLog(data, confidence) {
+                const statusDiv = document.getElementById('attendanceStatus');
+                if (!statusDiv) return;
+
+                const time = new Date().toLocaleTimeString('id-ID');
+                const entry = document.createElement('div');
+                entry.className = `status-box ${data.success ? 'status-success' : 'status-info'}`;
+                const confText = typeof confidence === 'number' ? ` <small>(${confidence.toFixed(1)}%)</small>` : '';
+                entry.innerHTML = `${data.success ? '✅' : 'ℹ️'} [${time}] ${this.escapeHtml(data.message || data.error || '')}${confText}`;
+                statusDiv.prepend(entry);
+
+                while (statusDiv.children.length > 8) {
+                    statusDiv.removeChild(statusDiv.lastChild);
+                }
+            },
+
+            // ============ REPORT ============
+            async loadReport() {
+                try {
+                    const response = await fetch(`${this.apiUrl}/attendance/report`);
+                    const report = await response.json();
+
+                    const table = document.getElementById('reportTable');
+                    if (!table) return;
+
+                    table.innerHTML = report.map((r, idx) => `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td>${this.escapeHtml(r.nama)}</td>
+                            <td>${this.escapeHtml(r.nis)}</td>
+                            <td>${this.escapeHtml(r.kelas)}</td>
+                            <td>
+                                <span class="badge ${r.status === 'Hadir' ? 'badge-present' : 'badge-absent'}">
+                                    ${r.status}
+                                </span>
+                            </td>
+                            <td>${r.time_in || '-'}</td>
+                            <td>${r.confidence != null ? Number(r.confidence).toFixed(1) + '%' : '-'}</td>
+                        </tr>
+                    `).join('');
+                } catch (error) {
+                    console.error('Error loading report:', error);
+                }
+            },
+
+            // ============ MISC ============
+            playBeep(frequency, duration) {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = 'sine';
+
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + duration / 1000);
+                } catch (e) {
+                    // Audio not supported, silently fail
+                }
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>
