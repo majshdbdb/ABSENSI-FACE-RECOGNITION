@@ -1,6 +1,0 @@
-node_modules/
-attendance.db
-attendance.db-journal
-.env
-*.log
-.DS_Store
